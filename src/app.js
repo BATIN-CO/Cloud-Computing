@@ -2,7 +2,7 @@ const Hapi = require("@hapi/hapi");
 const ml = require("./ml");
 
 const server = Hapi.server({
-    host: process.env.NODE_ENV !== 'production' ? 'localhost': '0.0.0.0',
+    host: process.env.NODE_ENV !== 'production' ? 'localhost': '127.0.0.1',
     port: 8000
   });
 
