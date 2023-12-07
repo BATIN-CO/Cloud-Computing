@@ -2,7 +2,7 @@ const tf = require("@tensorflow/tfjs-node");
 
 async function loadModel() {
   const model = await tf.loadLayersModel(
-    "https://storage.googleapis.com/model-ch2-ps526/tfjs/model.json"
+    "https://storage.googleapis.com/model-ch2-ps526/tfjs/Mobilenet_batik.json"
   );
   return model;
 }
