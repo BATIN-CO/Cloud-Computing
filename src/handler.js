@@ -1,22 +1,5 @@
-const { Storage } = require('@google-cloud/storage');
-const Multer = require('multer');
-
-// Konfigurasi Storage GCS
-const storage = new Storage({
-  projectId: 'test-1-405003',
-  keyFilename: '../test-1-405003-c8cca3835c96.json',
-});
-
-const bucketName = 'test-bucket-yosia1';
-const bucket = storage.bucket(bucketName);
-
-// Konfigurasi Multer untuk mengelola upload
-const multer = Multer({
-  storage: Multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024, // Batasan ukuran berkas (5 MB)
-  },
-});
+const { bucket } = require("./gcs");
+const { createConnection } = require("./sql");
 
 const upImageHandler = (request, h) => {
   try {
@@ -53,4 +36,78 @@ const upImageHandler = (request, h) => {
   }
 };
 
-module.exports = {upImageHandler};
+const discoverHandler = async (request, h) => {
+  try {
+    const connection = await createConnection();
+
+    const [rows, fields] = await connection.execute(
+      "SELECT batikId, nama, asal, gambar FROM informasi;"
+    );
+
+    const response = h.response({
+      error: false,
+      message: "Menampilkan informasi batik berhasil",
+      data: {
+        rows,
+      },
+    });
+    response.code(200);
+    return response;
+  } catch (err) {
+    console.error(err);
+    return h
+      .response({ erro: true, message: "Internal Server Error" })
+      .code(500);
+  }
+};
+
+const detailBatikHandler = async (request, h) => {
+  try {
+    const connection = await createConnection();
+    const { batikId } = request.params;
+
+    const [rows, fields] = await connection.execute(
+      "SELECT * FROM informasi WHERE batikId = ?;",
+      [batikId]
+    );
+
+    return {
+      error: false,
+      message: "Menampilkan detail batik berhasil",
+      data: {
+        rows,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+    return h
+      .response({ erro: true, message: "Internal Server Error" })
+      .code(500);
+  }
+};
+
+const cariBatikHandler = async (request, h) => {
+  try {
+    const connection = await createConnection();
+    const { searchTerm } = request.params;
+
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM informasi WHERE nama LIKE '%${searchTerm}%'`
+    );
+
+    return {
+      error: false,
+      message: "Pencarian batik berhasil",
+      data: {
+        rows,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+    return h
+      .response({ erro: true, message: "Internal Server Error" })
+      .code(500);
+  }
+};
+
+module.exports = { upImageHandler, discoverHandler, detailBatikHandler, cariBatikHandler };
