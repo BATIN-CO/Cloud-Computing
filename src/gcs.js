@@ -18,4 +18,39 @@ const multer = Multer({
   },
 });
 
-module.exports = {bucket};
+const imgUpHandler = async (request, h) => {
+  try {
+    const file = request.payload.file;
+
+    if (!file) {
+      return h.response('No file uploaded').code(400);
+    }
+
+    const filename = file.hapi.filename;
+    const data = file._data;
+
+    // Simpan berkas di GCS
+    const fileUpload = bucket.file(filename);
+    const stream = fileUpload.createWriteStream({
+      metadata: {
+        contentType: file.hapi.headers['content-type'],
+      },
+    });
+
+    stream.on('error', (err) => {
+      console.error(err);
+      return h.response('Upload failed').code(500);
+    });
+
+    stream.on('finish', () => {
+      return h.response('Upload success').code(200);
+    });
+
+    stream.end(data);
+  } catch (err) {
+    console.error(err);
+    return h.response('Internal Server Error').code(500);
+  }
+};
+
+module.exports = {imgUpHandler};

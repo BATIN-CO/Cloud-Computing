@@ -1,5 +1,5 @@
 const Hapi = require("@hapi/hapi");
-const routes = require("./routes");
+const routes = require("./src/routes.js");
 
 const init = async () => {
   const server = Hapi.server({
@@ -9,6 +9,16 @@ const init = async () => {
       cors: {
         origin: ["*"],
       },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: (request, h) => {
+      console.log('Response success');
+      // Mengirim respons "Response Success!" ke klien
+      return h.response('Response Success!');
     },
   });
 

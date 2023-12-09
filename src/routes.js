@@ -1,7 +1,13 @@
-const {upImgHandler,
+const {
+  // upImageHandler,
   discoverHandler,
   detailBatikHandler,
-  cariBatikHandler} = require('./handler');
+  cariBatikHandler,
+  cariTokoHandler,
+  tampilTokoHandler,
+  testUp,
+} = require("./handler");
+const { imgUpHandler } = require("./gcs");
 
 const routes = [
   {
@@ -19,18 +25,28 @@ const routes = [
     path: "/cari/{searchTerm}",
     handler: cariBatikHandler,
   },
+  {
+    method: "GET",
+    path: "/cariToko/{searchTerm}",
+    handler: cariTokoHandler,
+  },
+  {
+    method: "GET",
+    path: "/tampilToko",
+    handler: tampilTokoHandler,
+  },
   // HOLDING DULU
-  // {
-  //   method: "POST",
-  //   path: "/upload",
-  //   options: {
-  //     payload: {
-  //       output: "stream",
-  //       allow: "multipart/form-data",
-  //     },
-  //   },
-  //   handler: upImgHandler,
-  // },
+  {
+    method: "POST",
+    path: "/upload",
+    options: {
+      payload: {
+        output: "stream",
+        allow: "multipart/form-data",
+      },
+    },
+    handler: imgUpHandler,
+  },
   // HOLDING DULU
 ];
 
