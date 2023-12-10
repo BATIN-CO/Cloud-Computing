@@ -1,5 +1,6 @@
 const Hapi = require("@hapi/hapi");
 const routes = require("./src/routes.js");
+require('@google-cloud/debug-agent').start()
 
 const init = async () => {
   const server = Hapi.server({
