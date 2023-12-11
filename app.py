@@ -1,29 +1,58 @@
 from flask import Flask, render_template, request
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.inception_v3 import preprocess_input, decode_predictions
 import numpy as np
-import h5py
-from PIL import Image
+from tensorflow.keras.layers import Layer
 
 app = Flask(__name__)
 
-model = load_model('Weight_batik.h5')
+from tensorflow.keras.layers import Layer
+import tensorflow as tf
 
-def process_image(img):
-    img = img.resize((224, 224))
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = preprocess_input(img_array)
-    return img_array
+# Deklarasikan ulang KerasLayer (jika digunakan)
+class KerasLayer(Layer):
+    def __init__(self, units, **kwargs):
+        self.units = units
+        super(KerasLayer, self).__init__(**kwargs)
 
-def predict_image(img_path):
-    img = Image.open(img_path)
-    img_array = process_image(img)
-    predictions = model.predict(img_array)
-    decoded_predictions = decode_predictions(predictions)
-    top_prediction = decoded_predictions[0][0]
-    return top_prediction
+    def build(self, input_shape):
+        self.w = self.add_weight(
+            shape=(input_shape[-1], self.units),
+            initializer='random_normal',
+            trainable=True,
+        )
+        self.b = self.add_weight(
+            shape=(self.units,),
+            initializer='random_normal',
+            trainable=True,
+        )
+        super(KerasLayer, self).build(input_shape)
+
+    def call(self, inputs):
+        return tf.matmul(inputs, self.w) + self.b
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.units)
+
+# Example usage of KerasLayer with units=10
+keras_layer_instance = KerasLayer(units=10)
+
+# Fungsi untuk memuat model
+def load_model():
+    # Baca file model JSON
+    with open('model/Mobilenet_batik.json', 'r') as json_file:
+        loaded_model_json = json_file.read()
+
+    # Muat model dari JSON
+    loaded_model = model_from_json(loaded_model_json, custom_objects={'KerasLayer': KerasLayer})
+
+    # Muat bobot model dari file HDF5
+    loaded_model.load_weights('model/Weight_batik.h5')
+
+    return loaded_model
+
+# Jalankan fungsi load_model untuk mendapatkan model yang dimuat
+model = load_model()
 
 @app.route('/')
 def home():
@@ -40,8 +69,16 @@ def predict():
         return render_template('index.html', message='No selected file')
 
     if file:
-        result = predict_image(file)
-        return render_template('index.html', message='Prediction: {}'.format(result[1]))
+        # Proses gambar untuk memenuhi input model
+        img = image.load_img(file, target_size=(100, 100))
+        img_array = image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+
+        # Lakukan prediksi
+        prediction = model.predict(img_array)
+        predicted_class = np.argmax(prediction)
+
+        return render_template('index.html', message=f'Predicted Class: {predicted_class}')
 
 if __name__ == '__main__':
     app.run(debug=True)
