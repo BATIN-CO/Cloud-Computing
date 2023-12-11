@@ -1,1 +1,0 @@
-tensorflowjs_converter --input_format=keras Weight_batik.h5 tfjs\

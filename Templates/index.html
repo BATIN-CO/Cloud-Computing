@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Picture Upload and Prediction</title>
+</head>
+<body>
+
+  <h2>Upload a Picture</h2>
+
+  <form action="/predict" method="post" enctype="multipart/form-data">
+    <label for="picture">Select a picture:</label>
+    <input type="file" id="picture" name="picture" accept="image/*">
+    <br>
+    <input type="submit" value="Predict">
+  </form>
+
+</body>
+</html>
