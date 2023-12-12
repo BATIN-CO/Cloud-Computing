@@ -6,6 +6,7 @@ import tensorflow_hub as hub
 from tensorflow import keras
 from tensorflow.keras.preprocessing import image
 import numpy as np
+from google.cloud import storage
 
 app = Flask(__name__)
 
@@ -13,6 +14,20 @@ hub.KerasLayer(hub.load("tf_hub_saved_model"))
 my_reloaded_model = tf.keras.models.load_model(
        'Batik_mobilenet.h5', custom_objects={'KerasLayer': hub.KerasLayer}
     )
+
+
+# Set the path to your service account key (key.json)
+SERVICE_ACCOUNT_KEY_PATH = 'key.json'
+
+# Initialize Google Cloud Storage client with the service account key
+storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PATH)
+
+# Set your Google Cloud Storage bucket name
+
+BUCKET_NAME = 'uploads_predicts'
+UPLOAD_FOLDER = 'uploads'
+
+
 def predict_image(image_path):
     #image_path = 'uploads/coba.png'  # Ganti dengan path gambar Anda
     base_dir = 'Dataset'
@@ -43,6 +58,13 @@ def predict_image(image_path):
     # For demonstration purposes, returning a dummy prediction
     return f"Hasil prediksi: {predicted_class_name}"
 
+
+def upload_to_bucket(file_path, blob_name):
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_filename(file_path)
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -58,14 +80,19 @@ def predict():
         return "No selected picture", 400
 
     if picture:
-        
-        picture.save(os.path.join('uploads', picture.filename))
+        # Save the uploaded image to the local 'uploads' folder
+        picture_path = os.path.join(UPLOAD_FOLDER, picture.filename)
+        picture.save(picture_path)
 
         # Get prediction using your processing function
-        prediction = predict_image(os.path.join('uploads', picture.filename))
+        prediction = predict_image(picture_path)
+
+        # Upload the image to Google Cloud Storage after prediction
+        upload_to_bucket(picture_path, picture.filename)
 
         # Return the prediction result
-        return f"Prediction: {prediction}"
+        return f"Prediction: {prediction}
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=3000)
+
