@@ -90,6 +90,9 @@ def predict():
         # Upload the image to Google Cloud Storage after prediction
         upload_to_bucket(picture_path, picture.filename)
 
+        # Remove the local file after uploading
+        os.remove(picture_path)
+
         # Return the prediction result
         return f"Prediction: {prediction}"
 
