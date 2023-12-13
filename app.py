@@ -1,84 +1,114 @@
 from flask import Flask, render_template, request
-from tensorflow.keras.models import model_from_json
+import os
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import tensorflow_hub as hub
+from tensorflow import keras
 from tensorflow.keras.preprocessing import image
 import numpy as np
-from tensorflow.keras.layers import Layer
+from google.cloud import storage
 
 app = Flask(__name__)
 
-from tensorflow.keras.layers import Layer
-import tensorflow as tf
+hub.KerasLayer(hub.load("tf_hub_saved_model"))
+my_reloaded_model = tf.keras.models.load_model(
+       'Batik_mobilenet.h5', custom_objects={'KerasLayer': hub.KerasLayer}
+    )
 
-# Deklarasikan ulang KerasLayer (jika digunakan)
-class KerasLayer(Layer):
-    def __init__(self, units, **kwargs):
-        self.units = units
-        super(KerasLayer, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        self.w = self.add_weight(
-            shape=(input_shape[-1], self.units),
-            initializer='random_normal',
-            trainable=True,
-        )
-        self.b = self.add_weight(
-            shape=(self.units,),
-            initializer='random_normal',
-            trainable=True,
-        )
-        super(KerasLayer, self).build(input_shape)
+# Set the path to your service account key (key.json)
+SERVICE_ACCOUNT_KEY_PATH = 'key.json'
 
-    def call(self, inputs):
-        return tf.matmul(inputs, self.w) + self.b
+# Initialize Google Cloud Storage client with the service account key
+storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PATH)
 
-    def compute_output_shape(self, input_shape):
-        return (input_shape[0], self.units)
+# Set your Google Cloud Storage bucket name
 
-# Example usage of KerasLayer with units=10
-keras_layer_instance = KerasLayer(units=10)
+BUCKET_NAME = 'uploads_predicts'
+UPLOAD_FOLDER = 'uploads'
 
-# Fungsi untuk memuat model
-def load_model():
-    # Baca file model JSON
-    with open('model/Mobilenet_batik.json', 'r') as json_file:
-        loaded_model_json = json_file.read()
 
-    # Muat model dari JSON
-    loaded_model = model_from_json(loaded_model_json, custom_objects={'KerasLayer': KerasLayer})
+def predict_image(image_path):
+    #image_path = 'uploads/coba.png'  # Ganti dengan path gambar Anda
+    base_dir = 'Dataset'
+    train_dir = os.path.join(base_dir, 'train')
+    train_datagen = ImageDataGenerator(
+        rescale=1./255,
+    )
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,  # This is the source directory for training images
+        target_size=(224, 224),  # All images will be resized to 150x150
+        batch_size=20,
+        # Since we use binary_crossentropy loss, we need binary labels
+        class_mode='categorical')
+    # Load gambar dan praproses sesuai dengan format yang digunakan saat pelatihan
+    img = image.load_img(image_path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0  # Normalisasi
 
-    # Muat bobot model dari file HDF5
-    loaded_model.load_weights('model/Weight_batik.h5')
+    # Lakukan prediksi dengan model yang sudah dilatih
+    prediction = my_reloaded_model.predict(img_array)
+    predicted_class = np.argmax(prediction)
 
-    return loaded_model
+    # Dapatkan nama kelas dari indeks prediksi
+    class_names = sorted(train_generator.class_indices.keys())
+    predicted_class_name = class_names[predicted_class]
 
-# Jalankan fungsi load_model untuk mendapatkan model yang dimuat
-model = load_model()
+    # For demonstration purposes, returning a dummy prediction
+    return f"Hasil prediksi: {predicted_class_name}"
+
+
+def upload_to_bucket(file_path, blob_name):
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_filename(file_path)
+
 
 @app.route('/')
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    if 'file' not in request.files:
-        return render_template('index.html', message='No file part')
+    if 'picture' not in request.files:
+        return "No picture uploaded", 400
 
-    file = request.files['file']
+    picture = request.files['picture']
 
-    if file.filename == '':
-        return render_template('index.html', message='No selected file')
+    if picture.filename == '':
+        return "No selected picture", 400
 
-    if file:
-        # Proses gambar untuk memenuhi input model
-        img = image.load_img(file, target_size=(100, 100))
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
+    if picture:
+        # Save the uploaded image to the local 'uploads' folder
+        picture_path = os.path.join(UPLOAD_FOLDER, picture.filename)
+        picture.save(picture_path)
 
-        # Lakukan prediksi
-        prediction = model.predict(img_array)
-        predicted_class = np.argmax(prediction)
+        # Get prediction using your processing function
+        prediction = predict_image(picture_path)
 
-        return render_template('index.html', message=f'Predicted Class: {predicted_class}')
+        # Upload the image to Google Cloud Storage after prediction
+        upload_to_bucket(picture_path, picture.filename)
+
+        # Remove the local file after uploading
+        os.remove(picture_path)
+
+    # Get lat and lng based on prediction
+        lat, lng = get_lat_lng(prediction)
+
+        # Render the template with lat and lng values
+        return render_template('result.html', prediction=prediction, lat=lat, lng=lng)
+
+def get_lat_lng(prediction):
+    # Logic to determine lat and lng based on prediction
+    if prediction == 'batik megamendung':
+        return -6.597, 106.799
+    elif prediction == 'batik kawung':
+        return -6.2088, 106.8456
+    else:
+        # Default values if no specific prediction is matched
+        return -6.2088, 106.8456
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=3000)
+

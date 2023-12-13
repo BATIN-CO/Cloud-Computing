@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <!-- Ganti YOUR_GOOGLE_MAPS_API_KEY dengan kunci API Google Maps Anda -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ63C7-_IZEQSERRCbF8xy3CckGSpzsAI&libraries=places"></script>
+</head>
+<body>
+    <h1>Prediction Result</h1>
+    <p id="prediction"></p>
+
+    <h2>Location on Map</h2>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+
+    <script>
+        // Ambil nilai prediksi, lat, dan lng dari Flask
+        var prediction = "{{ prediction }}";
+        var lat = {{ lat }};
+        var lng = {{ lng }};
+
+        // Update teks pada elemen dengan ID "prediction"
+        document.getElementById("prediction").innerHTML = "Hasil prediksi: " + prediction;
+
+        // Fungsi untuk membuat peta dengan lat dan lng yang diberikan
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: lat, lng: lng},
+                zoom: 12
+            });
+
+            // Marker untuk menunjukkan lokasi pada peta
+            var marker = new google.maps.Marker({
+                position: {lat: lat, lng: lng},
+                map: map,
+                title: 'Predicted Location'
+            });
+        }
+
+        // Panggil fungsi untuk membuat peta
+        initMap();
+    </script>
+</body>
+</html>
