@@ -21,7 +21,6 @@ const { createConnection } = require("./sql");
 //       return h.response("File already exists").code(409);
 //     }
 
-
 //     // Simpan berkas di GCS
 //     const fileUpload = bucket.file(name);
 //     const stream = fileUpload.createWriteStream({
@@ -78,35 +77,28 @@ const { createConnection } = require("./sql");
 //   }
 // };
 
+// handlers/firestoreHandler.js
+
 const discoverHandler = async (request, h) => {
   try {
     const connection = await createConnection();
-
-    const [rows, fields] = await connection.execute(
-      "SELECT batikId, nama, asal, gambar FROM informasi;"
-    );
-
-    const response = h.response({
-      error: false,
-      message: "Menampilkan informasi batik berhasil",
-      data: {
-        rows,
-      },
-    });
-    response.code(200);
-    return response;
-  } catch (err) {
-    console.error(err);
-    return h
-      .response({ erro: true, message: "Internal Server Error" })
-      .code(500);
-  }
-};
-
-const detailBatikHandler = async (request, h) => {
-  try {
-    const connection = await createConnection();
     const { batikId } = request.params;
+
+    if (batikId == 0) {
+      const [rows, fields] = await connection.execute(
+        "SELECT batikId, nama, asal, gambar FROM informasi;"
+      );
+
+      const response = h.response({
+        error: false,
+        message: "Menampilkan informasi batik berhasil",
+        data: {
+          rows,
+        },
+      });
+      response.code(200);
+      return response;
+    }
 
     const [rows, fields] = await connection.execute(
       "SELECT * FROM informasi WHERE batikId = ?;",
@@ -123,7 +115,7 @@ const detailBatikHandler = async (request, h) => {
   } catch (err) {
     console.error(err);
     return h
-      .response({ erro: true, message: "Internal Server Error" })
+      .response({ error: true, message: "Internal Server Error" })
       .code(500);
   }
 };
@@ -136,6 +128,16 @@ const cariBatikHandler = async (request, h) => {
     const [rows, fields] = await connection.execute(
       `SELECT * FROM informasi WHERE nama LIKE '%${searchTerm}%'`
     );
+
+    if (rows == "") {
+      return {
+        error: true,
+        message: "Batik tidak ditemukan",
+        data: {
+          rows,
+        },
+      };
+    }
 
     return {
       error: false,
@@ -152,58 +154,9 @@ const cariBatikHandler = async (request, h) => {
   }
 };
 
-const cariTokoHandler = async (request, h) => {
-  try {
-    const connection = await createConnection();
-    const { searchTerm } = request.params;
-
-    const [rows, fields] = await connection.execute(
-      `SELECT * FROM toko WHERE nama LIKE '%${searchTerm}%'`
-    );
-
-    return {
-      error: false,
-      message: "Pencarian toko berhasil",
-      data: {
-        rows,
-      },
-    };
-  } catch (err) {
-    console.error(err);
-    return h
-      .response({ erro: true, message: "Internal Server Error" })
-      .code(500);
-  }
-};
-
-const tampilTokoHandler = async (request, h) => {
-  try {
-    const connection = await createConnection();
-    const [rows, fields] = await connection.execute(
-      `SELECT * FROM toko;`
-    );
-
-    return {
-      error: false,
-      message: "Menampilkan informasi toko berhasil",
-      data: {
-        rows,
-      },
-    };
-  } catch (err) {
-    console.error(err);
-    return h
-      .response({ erro: true, message: "Internal Server Error" })
-      .code(500);
-  }
-};
-
 module.exports = {
   // upImageHandler,
   discoverHandler,
-  detailBatikHandler,
   cariBatikHandler,
-  cariTokoHandler,
-  tampilTokoHandler,
   // testUp,
 };

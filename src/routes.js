@@ -1,25 +1,27 @@
 const {
   // upImageHandler,
   discoverHandler,
-  detailBatikHandler,
   cariBatikHandler,
-  cariTokoHandler,
-  tampilTokoHandler,
-  testUp,
+  // discoverFtr,
+  // testUp,
 } = require("./handler");
 const { imgUpHandler } = require("./gcs");
+const { findPIHandler } = require("../map/placeIdFinder");
+const { makePredictionRequest } = require("./modelConnection");
+// const { tampilkan } = require("../fstore/fstr");
 
 const routes = [
   {
     method: "GET",
-    path: "/tampil",
+    path: "/tampil/{batikId}",
     handler: discoverHandler,
   },
-  {
-    method: "GET",
-    path: "/tampil/{batikId}",
-    handler: detailBatikHandler,
-  },
+  // PENDING PUSING FIRESTORE
+  // {
+  //   method: "GET",
+  //   path: "/tampil",
+  //   handler: tampilkan,
+  // },
   {
     method: "GET",
     path: "/cari/{searchTerm}",
@@ -27,13 +29,8 @@ const routes = [
   },
   {
     method: "GET",
-    path: "/cariToko/{searchTerm}",
-    handler: cariTokoHandler,
-  },
-  {
-    method: "GET",
-    path: "/tampilToko",
-    handler: tampilTokoHandler,
+    path: "/placeIdFinder",
+    handler: findPIHandler,
   },
   // HOLDING DULU
   {
@@ -48,6 +45,11 @@ const routes = [
     handler: imgUpHandler,
   },
   // HOLDING DULU
+  {
+    method: 'POST',
+    path: '/predictAPI',
+    handler: makePredictionRequest,
+  },
 ];
 
 module.exports = routes;
