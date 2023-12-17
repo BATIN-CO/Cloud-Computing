@@ -24,7 +24,7 @@ storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PA
 
 # Set your Google Cloud Storage bucket name
 
-BUCKET_NAME = 'uploads_predicts'
+BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'uploads_predicts')
 UPLOAD_FOLDER = 'uploads'
 
 
@@ -97,5 +97,4 @@ def predict():
         return f"Hasil: {prediction}"
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=3000)
-
+    app.run(debug=True)
