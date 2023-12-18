@@ -27,7 +27,7 @@ storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PA
 
 # Set your Google Cloud Storage bucket name
 
-BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'uploads_predicts') # Change uploads_predicts to the bucket name used and change the bucket name in app.yaml
+BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'batinco') # Change batinco to the bucket name used and change the bucket name in app.yaml
 
 def predict_image(BUCKET_NAME, blob_name):
     # Load the image from Google Cloud Storage
