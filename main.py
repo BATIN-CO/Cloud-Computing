@@ -27,7 +27,7 @@ storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PA
 
 # Set your Google Cloud Storage bucket name
 
-BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'uploads_predicts')
+BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'uploads_predicts') # Change uploads_predicts to the bucket name used and change the bucket name in app.yaml
 
 def predict_image(BUCKET_NAME, blob_name):
     # Load the image from Google Cloud Storage
@@ -37,7 +37,7 @@ def predict_image(BUCKET_NAME, blob_name):
 
     # Load the image from bytes using PIL
     img = Image.open(BytesIO(img_data))
-    img = img.resize((224, 224))  # Resize the image if needed
+    img = img.resize((224, 224))  # Resize the image
 
     # Convert PIL Image to numpy array
     img_array = np.array(img)
@@ -48,7 +48,7 @@ def predict_image(BUCKET_NAME, blob_name):
     prediction = my_reloaded_model.predict(img_array)
     predicted_class = np.argmax(prediction)
 
-    # Dapatkan nama kelas dari indeks prediksi
+    # Get the class name of the prediction index
     base_dir = 'Dataset'
     train_dir = os.path.join(base_dir, 'train')
     train_datagen = ImageDataGenerator(rescale=1./255)
