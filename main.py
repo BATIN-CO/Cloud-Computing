@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from google.cloud import storage
 from PIL import Image
+from io import BytesIO
 import uuid
 
 app = Flask(__name__)
