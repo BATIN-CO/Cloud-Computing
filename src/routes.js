@@ -2,12 +2,12 @@ const {
   // upImageHandler,
   discoverHandler,
   cariBatikHandler,
+  makePredictionRequest,
   // discoverFtr,
   // testUp,
 } = require("./handler");
-const { imgUpHandler } = require("./gcs");
 const { findPIHandler } = require("../map/placeIdFinder");
-const { makePredictionRequest } = require("./modelConnection");
+// const { makePredictionRequest } = require("./modelConnection");
 // const { tampilkan } = require("../fstore/fstr");
 
 const routes = [
@@ -28,27 +28,21 @@ const routes = [
     handler: cariBatikHandler,
   },
   {
-    method: "GET",
-    path: "/placeIdFinder",
-    handler: findPIHandler,
-  },
-  // HOLDING DULU
-  {
     method: "POST",
-    path: "/upload",
+    path: "/predict",
+    handler: makePredictionRequest,
     options: {
       payload: {
-        output: "stream",
-        allow: "multipart/form-data",
+          output: 'stream',
+          parse: true,
+          multipart: true,
       },
-    },
-    handler: imgUpHandler,
+      plugins: {
+          'hapi-swagger': {
+              payloadType: 'form',
+          },
+      },
   },
-  // HOLDING DULU
-  {
-    method: 'POST',
-    path: '/predictAPI',
-    handler: makePredictionRequest,
   },
 ];
 

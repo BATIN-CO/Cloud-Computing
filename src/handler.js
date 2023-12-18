@@ -1,5 +1,8 @@
 // const { bucket } = require("./gcs");
 const { createConnection } = require("./sql");
+const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
 
 // const upImageHandler = async (request, h) => {
 //   try {
@@ -154,9 +157,49 @@ const cariBatikHandler = async (request, h) => {
   }
 };
 
+const makePredictionRequest = async (request, h) => {
+  try {
+    // // Kirim permintaan ke model machine learning
+    // const response = await axios.post(
+    //   "https://model-api-motif-dot-capstone-ch2-ps526.et.r.appspot.com/predict",
+    //   request.payload,
+    //   {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   }
+    // );
+
+    // // Mendapatkan hasil prediksi dari respons model
+    // const prediction = response.data;
+
+    const data = new FormData();
+    const imageBuffer = request.payload.picture._data; // Ganti dengan path gambar dari permintaan Hapi.js
+    data.append("picture", imageBuffer, { filename: "image.jpg" });
+
+    const response = await axios.post(
+      "https://model-api-motif-dot-capstone-ch2-ps526.et.r.appspot.com/predict",
+      data,
+      {
+        headers: {
+          ...data.getHeaders(),
+        },
+      }
+    );
+
+    const prediction = response.data;
+
+    return h.response(`Prediction: ${prediction}`);
+  } catch (error) {
+    console.error(error);
+    return h.response("Internal Server Error").code(500);
+  }
+};
+
 module.exports = {
   // upImageHandler,
   discoverHandler,
   cariBatikHandler,
+  makePredictionRequest,
   // testUp,
 };

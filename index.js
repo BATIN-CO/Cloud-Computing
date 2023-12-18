@@ -1,5 +1,7 @@
 const Hapi = require("@hapi/hapi");
 const routes = require("./src/routes.js");
+const Inert = require('@hapi/inert');
+const Multer = require('multer');
 require('@google-cloud/debug-agent').start()
 
 const init = async () => {
@@ -13,6 +15,8 @@ const init = async () => {
     },
   });
 
+  await server.register(Inert);
+
   server.route({
     method: 'GET',
     path: '/',
@@ -21,6 +25,10 @@ const init = async () => {
       return h.response('Response Success!');
     },
   });
+
+  // Konfigurasi multer
+  const storage = Multer.memoryStorage();
+  const upload = Multer({ storage: storage });
 
   server.route(routes);
 
