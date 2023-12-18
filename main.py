@@ -7,6 +7,8 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from google.cloud import storage
+from PIL import Image
+import uuid
 
 app = Flask(__name__)
 
@@ -25,44 +27,55 @@ storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PA
 # Set your Google Cloud Storage bucket name
 
 BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'uploads_predicts')
-UPLOAD_FOLDER = 'uploads'
 
+def predict_image(BUCKET_NAME, blob_name):
+    # Load the image from Google Cloud Storage
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(blob_name)
+    img_data = blob.download_as_bytes()
 
-def predict_image(image_path):
-    #image_path = 'uploads/coba.png'  # Ganti dengan path gambar Anda
-    base_dir = 'Dataset'
-    train_dir = os.path.join(base_dir, 'train')
-    train_datagen = ImageDataGenerator(
-        rescale=1./255,
-    )
-    train_generator = train_datagen.flow_from_directory(
-        train_dir,  # This is the source directory for training images
-        target_size=(224, 224),  # All images will be resized to 150x150
-        batch_size=20,
-        # Since we use binary_crossentropy loss, we need binary labels
-        class_mode='categorical')
-    # Load gambar dan praproses sesuai dengan format yang digunakan saat pelatihan
-    img = image.load_img(image_path, target_size=(224, 224))
-    img_array = image.img_to_array(img)
+    # Load the image from bytes using PIL
+    img = Image.open(BytesIO(img_data))
+    img = img.resize((224, 224))  # Resize the image if needed
+
+    # Convert PIL Image to numpy array
+    img_array = np.array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0  # Normalisasi
+    img_array = img_array / 255.0  # Normalization
 
-    # Lakukan prediksi dengan model yang sudah dilatih
+    # Perform prediction with the trained model
     prediction = my_reloaded_model.predict(img_array)
     predicted_class = np.argmax(prediction)
 
     # Dapatkan nama kelas dari indeks prediksi
+    base_dir = 'Dataset'
+    train_dir = os.path.join(base_dir, 'train')
+    train_datagen = ImageDataGenerator(rescale=1./255)
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=(224, 224),
+        batch_size=20,
+        class_mode='categorical'
+    )
     class_names = sorted(train_generator.class_indices.keys())
     predicted_class_name = class_names[predicted_class]
 
-    # For demonstration purposes, returning a dummy prediction
+    # For demonstration purposes, return a dummy prediction
     return f"Hasil prediksi: {predicted_class_name}"
 
-
-def upload_to_bucket(file_path, blob_name):
+def upload_to_bucket(file_storage, blob_name):
     bucket = storage_client.bucket(BUCKET_NAME)
     blob = bucket.blob(blob_name)
-    blob.upload_from_filename(file_path)
+
+    # Save the file storage content to a temporary file
+    temp_file_path = f"/tmp/{uuid.uuid4()}.jpg"  # Use a unique file name
+    file_storage.save(temp_file_path)
+
+    # Upload the temporary file to Google Cloud Storage
+    blob.upload_from_filename(temp_file_path)
+
+    # Clean up the temporary file
+    os.remove(temp_file_path)
 
 
 @app.route('/')
@@ -80,18 +93,14 @@ def predict():
         return "No selected picture", 400
 
     if picture:
-        # Save the uploaded image to the local 'uploads' folder
-        picture_path = os.path.join(UPLOAD_FOLDER, picture.filename)
-        picture.save(picture_path)
+        # Generate a unique blob name using uuid (you may need to adjust this logic)
+        blob_name = f"uploads/{uuid.uuid4()}.jpg"
+
+        # Upload the image to Google Cloud Storage
+        upload_to_bucket(picture, blob_name)
 
         # Get prediction using your processing function
-        prediction = predict_image(picture_path)
-
-        # Upload the image to Google Cloud Storage after prediction
-        upload_to_bucket(picture_path, picture.filename)
-
-        # Remove the local file after uploading
-        os.remove(picture_path)
+        prediction = predict_image(BUCKET_NAME, blob_name)
 
         # Return the prediction result
         return f"Hasil: {prediction}"
