@@ -1,14 +1,9 @@
 const {
-  // upImageHandler,
   discoverHandler,
   cariBatikHandler,
   makePredictionRequest,
-  // discoverFtr,
-  // testUp,
+  objectPredict,
 } = require("./handler");
-const { findPIHandler } = require("../map/placeIdFinder");
-// const { makePredictionRequest } = require("./modelConnection");
-// const { tampilkan } = require("../fstore/fstr");
 
 const routes = [
   {
@@ -16,12 +11,6 @@ const routes = [
     path: "/tampil/{batikId}",
     handler: discoverHandler,
   },
-  // PENDING PUSING FIRESTORE
-  // {
-  //   method: "GET",
-  //   path: "/tampil",
-  //   handler: tampilkan,
-  // },
   {
     method: "GET",
     path: "/cari/{searchTerm}",
@@ -33,16 +22,33 @@ const routes = [
     handler: makePredictionRequest,
     options: {
       payload: {
-          output: 'stream',
-          parse: true,
-          multipart: true,
+        output: "stream",
+        parse: true,
+        multipart: true,
       },
       plugins: {
-          'hapi-swagger': {
-              payloadType: 'form',
-          },
+        "hapi-swagger": {
+          payloadType: "form",
+        },
       },
+    },
   },
+  {
+    method: "POST",
+    path: "/object",
+    handler: objectPredict,
+    options: {
+      payload: {
+        output: "stream",
+        parse: true,
+        multipart: true,
+      },
+      plugins: {
+        "hapi-swagger": {
+          payloadType: "form",
+        },
+      },
+    },
   },
 ];
 

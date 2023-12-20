@@ -1,86 +1,6 @@
-// const { bucket } = require("./gcs");
 const { createConnection } = require("./sql");
 const axios = require("axios");
 const FormData = require("form-data");
-const fs = require("fs");
-
-// const upImageHandler = async (request, h) => {
-//   try {
-//     const { img } = request.payload;
-
-//     if (!img) {
-//       return h.response("No file uploaded").code(400);
-//     }
-
-//     const file = img;
-//     const name = img.hapi.filename;
-//     const path = `./images/batik/${name}`;
-//     const pathFinder = `images/batik/${name}`;
-//     const data = file._data;
-
-//     // Cek apakah file sudah ada
-//     const filesInDir = await readdir("./images/batik");
-//     if (filesInDir.includes(name)) {
-//       return h.response("File already exists").code(409);
-//     }
-
-//     // Simpan berkas di GCS
-//     const fileUpload = bucket.file(name);
-//     const stream = fileUpload.createWriteStream({
-//       metadata: {
-//       contentType: file.hapi.headers["content-type"],
-//     },
-//   });
-
-//     stream.on("error", (err) => {
-//       console.error(err);
-//       return h.response("Upload failed").code(500);
-//     });
-
-//     stream.on("finish", () => {
-//       return h.response("Upload success").code(200);
-//     });
-
-//     stream.end(data);
-//   } catch (err) {
-//     console.error(err);
-//     return h.response("Internal Server Error").code(500);
-//   }
-// };
-
-// const testUp = async (request, h) => {
-//   try {
-//     const { photo } = request.payload;
-
-//     if (!photo) {
-//       return h.response("Upload Picture Failed");
-//     }
-
-//     const file = photo;
-//     const name = file.hapi.filename;
-//     const path = `./images/batik/${name}`;
-//     const pathFinder = `images/batik/${name}`;
-
-//     // Cek apakah file sudah ada
-//     const filesInDir = await readdir("./images/batik");
-//     if (filesInDir.includes(name)) {
-//       return h.response("File already exists").code(409);
-//     }
-
-//     // Jika tidak ada, simpan file
-//     const fileStream = fs.createWriteStream(path);
-//     await file.pipe(fileStream);
-
-//   } catch (error) {
-//     // Log error di konsol atau tempatkan di file log
-//     console.error("Error occurred while uploading file:", error);
-
-//     // Memberikan respons yang lebih ramah pengguna
-//     return h.response("Something went wrong while uploading the file").code(500);
-//   }
-// };
-
-// handlers/firestoreHandler.js
 
 const discoverHandler = async (request, h) => {
   try {
@@ -159,20 +79,6 @@ const cariBatikHandler = async (request, h) => {
 
 const makePredictionRequest = async (request, h) => {
   try {
-    // // Kirim permintaan ke model machine learning
-    // const response = await axios.post(
-    //   "https://model-api-motif-dot-capstone-ch2-ps526.et.r.appspot.com/predict",
-    //   request.payload,
-    //   {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   }
-    // );
-
-    // // Mendapatkan hasil prediksi dari respons model
-    // const prediction = response.data;
-
     const data = new FormData();
     const imageBuffer = request.payload.picture._data; // Ganti dengan path gambar dari permintaan Hapi.js
     data.append("picture", imageBuffer, { filename: "image.jpg" });
@@ -189,17 +95,40 @@ const makePredictionRequest = async (request, h) => {
 
     const prediction = response.data;
 
-    return h.response(`Prediction: ${prediction}`);
+    return h.response(prediction);
   } catch (error) {
     console.error(error);
     return h.response("Internal Server Error").code(500);
   }
 };
 
+const objectPredict = async (request, h) => {
+  try {
+    const data = new FormData();
+    const imageBuffer = request.payload.picture._data; // Ganti dengan path gambar dari permintaan Hapi.js
+    data.append("picture", imageBuffer, { filename: "image.jpg" });
+
+    const response = await axios.post(
+      "http://35.219.11.226:3689/object",
+      data,
+      {
+        headers: {
+          ...data.getHeaders(),
+        },
+      }
+    );
+
+    const prediction = response.data;
+
+    return h.response(prediction);
+  } catch (error) {
+    console.error(error);
+    return h.response("Internal Server Error").code(500);
+  }
+};
 module.exports = {
-  // upImageHandler,
   discoverHandler,
   cariBatikHandler,
   makePredictionRequest,
-  // testUp,
+  objectPredict,
 };
