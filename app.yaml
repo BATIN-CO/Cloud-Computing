@@ -2,10 +2,15 @@ runtime: python39
 service: modelapi
 entrypoint: gunicorn -b :$PORT main:app
 
-instance_class: F1
+instance_class: F2
 
 env_variables:
-  CLOUD_STORAGE_BUCKET: 'batinco'
+  CLOUD_STORAGE_BUCKET: 'uploads_predicts'
+
+automatic_scaling:
+  target_cpu_utilization: 0.95
+  min_instances: 1
+  max_instances: 10
 
 handlers:
 - url: /.*

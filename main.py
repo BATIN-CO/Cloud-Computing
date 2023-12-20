@@ -17,17 +17,14 @@ hub.KerasLayer(hub.load("tf_hub_saved_model"))
 my_reloaded_model = tf.keras.models.load_model(
        'Batik_mobilenet.h5', custom_objects={'KerasLayer': hub.KerasLayer}
     )
-
-
 # Set the path to your service account key (key.json)
 SERVICE_ACCOUNT_KEY_PATH = 'key.json'
 
 # Initialize Google Cloud Storage client with the service account key
 storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_KEY_PATH)
 
-# Set your Google Cloud Storage bucket name
-
-BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'batinco') # Change batinco to the bucket name used and change the bucket name in app.yaml
+# Set your Google Cloud Storage bucket name, change batinco to the bucket name used and change the bucket name in app.yaml
+BUCKET_NAME = os.environ.get('CLOUD_STORAGE_BUCKET', 'batinco') 
 
 def predict_image(BUCKET_NAME, blob_name):
     # Load the image from Google Cloud Storage
@@ -77,8 +74,7 @@ def upload_to_bucket(file_storage, blob_name):
 
     # Clean up the temporary file
     os.remove(temp_file_path)
-
-
+    
 @app.route('/')
 def index():
     return render_template('index.html')
