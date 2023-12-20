@@ -1,0 +1,84 @@
+nohup: ignoring input
+ * Serving Flask app 'detect'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3689
+ * Running on http://10.184.0.3:3689
+Press CTRL+C to quit
+103.155.251.237 - - [20/Dec/2023 09:56:49] "GET / HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 09:56:49] "GET /favicon.ico HTTP/1.1" 404 -
+[34m[1mdetect: [0mweights=best.pt, source=uploads/WhatsApp Image 2023-12-20 at 17.18.35_2cff3917.jpg, data=data/coco128.yaml, imgsz=[640, 640], conf_thres=0.25, iou_thres=0.45, max_det=1000, device=, view_img=False, save_txt=False, save_csv=False, save_conf=False, save_crop=False, nosave=False, classes=None, agnostic_nms=False, augment=False, visualize=False, update=False, project=runs/detect, name=exp, exist_ok=False, line_thickness=3, hide_labels=False, hide_conf=False, half=False, dnn=False, vid_stride=1
+YOLOv5 🚀 v7.0-249-gf400bba Python-3.8.10 torch-2.1.2+cu121 CPU
+
+Fusing layers... 
+Model summary: 157 layers, 7015519 parameters, 0 gradients, 15.8 GFLOPs
+image 1/1 /home/c274bsy4075/load_test/uploads/WhatsApp Image 2023-12-20 at 17.18.35_2cff3917.jpg: 416x640 2 Batik Gunungans, 236.1ms
+Speed: 2.6ms pre-process, 236.1ms inference, 1.3ms NMS per image at shape (1, 3, 640, 640)
+Results saved to [1mruns/detect/exp7[0m
+103.155.251.237 - - [20/Dec/2023 09:57:00] "POST /object HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 09:59:37] code 400, message Bad request version ('úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01Í\x8a\x8a\x00\x00\x00')
+103.155.251.237 - - [20/Dec/2023 09:59:37] "\x16\x03\x01\x02:\x01\x00\x026\x03\x03\x12x20î\x83^"Ñ^ä\x16\x9dÜ\x1f\x9b{÷\x05\x11\x08\x8fn/o/i\x00\x95]\x16q êËå\x86Í7\x86Ê\x10?"\x15ÄP_ñ'\x89®Wº±HC³\x81P\x0eÑ\x81²H\x00 úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01Í\x8a\x8a\x00\x00\x00" HTTPStatus.BAD_REQUEST -
+103.155.251.237 - - [20/Dec/2023 09:59:40] "GET / HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 09:59:42] "GET /favicon.ico HTTP/1.1" 404 -
+103.155.251.237 - - [20/Dec/2023 10:04:56] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00')
+103.155.251.237 - - [20/Dec/2023 10:04:56] "\x16\x03\x01\x02:\x01\x00\x026\x03\x03\x0c½=ZøõÒ\x80\x12\x9fk@}\x1a?PY\x15/2.'°NK\\zi¢®\x00\x0e õM­`XñÜO\x0cä¹\x87\x00´:{³Ø$ç·ú=Þ\x1c8ÈiïÚÛ¢\x00 jj\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01Íúú\x00\x00\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00" HTTPStatus.BAD_REQUEST -
+103.155.251.237 - - [20/Dec/2023 10:04:57] code 400, message Bad request version ('eezÒa&8çÅC\x07\x9fEC@È»lÝqÒ\x17\x9fÂ¡[=\x96\x9cð\x01_RúxÂ~Í´Ò~§\x00')
+103.155.251.237 - - [20/Dec/2023 10:04:57] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03®%\x9aWs¶âö\x84¢&vOÊÈï\x82×@\x9f\x07åeñ´Ùyì°ÚÉé ¶\x9fy£÷\x9b©ÙQ:|\x1cÜW\x8f<Ô\x10Ålîiÿþ\x84g´n\x98f$\x04\x00 êê\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01\x93\x9a\x9a\x00\x00\x00\x17\x00\x00ÿ\x01\x00\x01\x00\x00+\x00\x07\x06::\x03\x04\x03\x03Di\x00\x05\x00\x03\x02h2\x003\x00+\x00)ÚÚ\x00\x01\x00\x00\x1d\x00 \x82æ­\x96õ\x09&Jt?Õ\x09>´Ñ\x1fa\x94aÏ?T(H4ÆßºÿÛü\\\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00-\x00\x02\x01\x01\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x0b\x00\x02\x01\x00\x00\x1b\x00\x03\x02\x00\x02\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00#\x00\x00þ\x0d\x00º\x00\x00\x01\x00\x01x\x00 ª{¯±9-\x17\x1cì]&\x08i\x09\x08ú\x07®ÓVr¾nb\x19ôÓØ°\x9d\x1e=\x00\x90\x8d|WH\x8e¿\x0cÒ&\x85p²ÌÀ\x15Í=gí\x9d$º"Í\x9cX'ü\x8cê_Ð~Væ)uErÂä\x0c(Ú\x90¾HÇª\x895&½ÝµÉo$y¬íJ¬3g2ñmãý×\x11\x9aÈ½ð\x92rÛÁí+\x13\x96\x13FSË@ðÝ\x16â~\x0e'ö§û2´\x0deezÒa&8çÅC\x07\x9fEC@È»lÝqÒ\x17\x9fÂ¡[=\x96\x9cð\x01_RúxÂ~Í´Ò~§\x00" HTTPStatus.BAD_REQUEST -
+103.155.251.237 - - [20/Dec/2023 10:04:57] "GET / HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 10:04:59] "GET /favicon.ico HTTP/1.1" 404 -
+103.155.251.237 - - [20/Dec/2023 10:05:23] "GET / HTTP/1.1" 200 -
+[34m[1mdetect: [0mweights=best.pt, source=uploads/IMG_20231220_170544_459.jpg, data=data/coco128.yaml, imgsz=[640, 640], conf_thres=0.25, iou_thres=0.45, max_det=1000, device=, view_img=False, save_txt=False, save_csv=False, save_conf=False, save_crop=False, nosave=False, classes=None, agnostic_nms=False, augment=False, visualize=False, update=False, project=runs/detect, name=exp, exist_ok=False, line_thickness=3, hide_labels=False, hide_conf=False, half=False, dnn=False, vid_stride=1
+YOLOv5 🚀 v7.0-249-gf400bba Python-3.8.10 torch-2.1.2+cu121 CPU
+
+Fusing layers... 
+Model summary: 157 layers, 7015519 parameters, 0 gradients, 15.8 GFLOPs
+image 1/1 /home/c274bsy4075/load_test/uploads/IMG_20231220_170544_459.jpg: 640x480 1 Batik Gunungan, 276.8ms
+Speed: 2.3ms pre-process, 276.8ms inference, 1.0ms NMS per image at shape (1, 3, 640, 640)
+Results saved to [1mruns/detect/exp8[0m
+103.155.251.237 - - [20/Dec/2023 10:05:55] "POST /object HTTP/1.1" 200 -
+[34m[1mdetect: [0mweights=best.pt, source=uploads/Screenshot_20231220-170816.jpg, data=data/coco128.yaml, imgsz=[640, 640], conf_thres=0.25, iou_thres=0.45, max_det=1000, device=, view_img=False, save_txt=False, save_csv=False, save_conf=False, save_crop=False, nosave=False, classes=None, agnostic_nms=False, augment=False, visualize=False, update=False, project=runs/detect, name=exp, exist_ok=False, line_thickness=3, hide_labels=False, hide_conf=False, half=False, dnn=False, vid_stride=1
+YOLOv5 🚀 v7.0-249-gf400bba Python-3.8.10 torch-2.1.2+cu121 CPU
+
+Fusing layers... 
+Model summary: 157 layers, 7015519 parameters, 0 gradients, 15.8 GFLOPs
+image 1/1 /home/c274bsy4075/load_test/uploads/Screenshot_20231220-170816.jpg: 416x640 2 Batik Gunungans, 243.2ms
+Speed: 2.0ms pre-process, 243.2ms inference, 0.7ms NMS per image at shape (1, 3, 640, 640)
+Results saved to [1mruns/detect/exp9[0m
+103.155.251.237 - - [20/Dec/2023 10:08:54] "POST /object HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 10:11:15] "GET / HTTP/1.1" 200 -
+103.155.251.237 - - [20/Dec/2023 10:11:15] "GET /favicon.ico HTTP/1.1" 404 -
+[34m[1mdetect: [0mweights=best.pt, source=uploads/9.jpg, data=data/coco128.yaml, imgsz=[640, 640], conf_thres=0.25, iou_thres=0.45, max_det=1000, device=, view_img=False, save_txt=False, save_csv=False, save_conf=False, save_crop=False, nosave=False, classes=None, agnostic_nms=False, augment=False, visualize=False, update=False, project=runs/detect, name=exp, exist_ok=False, line_thickness=3, hide_labels=False, hide_conf=False, half=False, dnn=False, vid_stride=1
+YOLOv5 🚀 v7.0-249-gf400bba Python-3.8.10 torch-2.1.2+cu121 CPU
+
+Fusing layers... 
+Model summary: 157 layers, 7015519 parameters, 0 gradients, 15.8 GFLOPs
+[2023-12-20 10:11:22,239] ERROR in app: Exception on /object [POST]
+Traceback (most recent call last):
+  File "/home/c274bsy4075/.local/lib/python3.8/site-packages/flask/app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/c274bsy4075/.local/lib/python3.8/site-packages/flask/app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/c274bsy4075/.local/lib/python3.8/site-packages/flask/app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/c274bsy4075/.local/lib/python3.8/site-packages/flask/app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "detect.py", line 252, in predict
+    hasil_prediksi = main(opt)
+  File "detect.py", line 277, in main
+    hasil = run(**vars(opt))
+  File "/home/c274bsy4075/.local/lib/python3.8/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+  File "detect.py", line 173, in run
+    text_output.append(f"{names[int(cls)]}: {conf:.2f}")  # Example format, modify as needed
+UnboundLocalError: local variable 'cls' referenced before assignment
+103.155.251.237 - - [20/Dec/2023 10:11:22] "POST /object HTTP/1.1" 500 -
+[34m[1mdetect: [0mweights=best.pt, source=uploads/14.jpg, data=data/coco128.yaml, imgsz=[640, 640], conf_thres=0.25, iou_thres=0.45, max_det=1000, device=, view_img=False, save_txt=False, save_csv=False, save_conf=False, save_crop=False, nosave=False, classes=None, agnostic_nms=False, augment=False, visualize=False, update=False, project=runs/detect, name=exp, exist_ok=False, line_thickness=3, hide_labels=False, hide_conf=False, half=False, dnn=False, vid_stride=1
+YOLOv5 🚀 v7.0-249-gf400bba Python-3.8.10 torch-2.1.2+cu121 CPU
+
+Fusing layers... 
+Model summary: 157 layers, 7015519 parameters, 0 gradients, 15.8 GFLOPs
+image 1/1 /home/c274bsy4075/load_test/uploads/14.jpg: 640x640 2 Batik Gunungans, 403.4ms
+Speed: 5.4ms pre-process, 403.4ms inference, 0.8ms NMS per image at shape (1, 3, 640, 640)
+Results saved to [1mruns/detect/exp11[0m
+103.155.251.237 - - [20/Dec/2023 10:12:37] "POST /object HTTP/1.1" 200 -

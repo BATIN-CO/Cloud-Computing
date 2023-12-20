@@ -1,0 +1,2 @@
+Batik Gunungan 0.79: [tensor(609.), tensor(337.), tensor(1008.), tensor(869.)]
+Batik Gunungan 0.81: [tensor(433.), tensor(335.), tensor(678.), tensor(649.)]
