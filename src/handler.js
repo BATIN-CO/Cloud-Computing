@@ -95,10 +95,24 @@ const makePredictionRequest = async (request, h) => {
 
     const prediction = response.data;
 
-    return h.response(prediction);
+    const responsePredict = h.response({
+      error: false,
+      message: "Identifikasi batik berhasil",
+      message: "Identifikasi batik berhasil",
+      prediction,
+    });
+    responsePredict.code(200);
+
+    return responsePredict;
   } catch (error) {
     console.error(error);
-    return h.response("Internal Server Error").code(500);
+    const responsePredict = h.response({
+      error: true,
+      message: "Internal Server Error",
+    });
+    responsePredict.code(500);
+
+    return responsePredict;
   }
 };
 
@@ -119,13 +133,26 @@ const objectPredict = async (request, h) => {
     );
 
     const prediction = response.data;
+    const responsePredict = h.response({
+      error: false,
+      message: "Identifikasi batik berhasil",
+      prediction,
+    });
+    responsePredict.code(200);
 
-    return h.response(prediction);
+    return responsePredict;
   } catch (error) {
     console.error(error);
-    return h.response("Internal Server Error").code(500);
+    const responsePredict = h.response({
+      error: true,
+      message: "Internal Server Error",
+    });
+    responsePredict.code(500);
+
+    return responsePredict;
   }
 };
+
 module.exports = {
   discoverHandler,
   cariBatikHandler,
