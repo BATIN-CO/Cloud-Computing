@@ -98,7 +98,6 @@ const makePredictionRequest = async (request, h) => {
     const responsePredict = h.response({
       error: false,
       message: "Identifikasi batik berhasil",
-      message: "Identifikasi batik berhasil",
       prediction,
     });
     responsePredict.code(200);
