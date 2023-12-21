@@ -41,25 +41,17 @@ def predict_image(BUCKET_NAME, blob_name):
     img_array = np.expand_dims(img_array, axis=0)
     img_array = img_array / 255.0  # Normalization
 
-    # Perform prediction with the trained model
+    # Lakukan prediksi dengan model yang sudah dilatih
     prediction = my_reloaded_model.predict(img_array)
-    predicted_class = np.argmax(prediction)
+    top3_classes_idx = np.argsort(prediction[0])[-3:][::-1]
 
-    # Get the class name of the prediction index
-    base_dir = 'Dataset'
-    train_dir = os.path.join(base_dir, 'train')
-    train_datagen = ImageDataGenerator(rescale=1./255)
-    train_generator = train_datagen.flow_from_directory(
-        train_dir,
-        target_size=(224, 224),
-        batch_size=20,
-        class_mode='categorical'
-    )
-    class_names = sorted(train_generator.class_indices.keys())
-    predicted_class_name = class_names[predicted_class]
+    # Dapatkan nama kelas dari indeks prediksi
+    class_names = ['Batik Barong Bali', 'Batik Betawi', 'Batik Gunungan', 'Batik Kawung', 'Batik Megamendung', 'Batik Sido Asih', 'Batik Singa Barong', 'Batik Truntum Garuda', 'Batik Wahyu Temurun', 'Kain Endek Bali', 'batik buketan', 'batik jepara', 'batik parang', 'batik prada', 'batik sekarjagad']
 
-    # For demonstration purposes, return a dummy prediction
-    return f"Hasil prediksi: {predicted_class_name}"
+    predicted_class_names = [class_names[idx] for idx in top3_classes_idx]
+    predicted_probabilities = [prediction[0][idx] for idx in top3_classes_idx]
+
+    return predicted_class_names + predicted_probabilities
 
 def upload_to_bucket(file_storage, blob_name):
     bucket = storage_client.bucket(BUCKET_NAME)
