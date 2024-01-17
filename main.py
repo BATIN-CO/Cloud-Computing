@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify  # Import jsonify for JSON response
 import os
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -49,9 +49,13 @@ def predict_image(BUCKET_NAME, blob_name):
     class_names = ['Batik Barong Bali', 'Batik Betawi', 'Batik Gunungan', 'Batik Kawung', 'Batik Megamendung', 'Batik Sido Asih', 'Batik Singa Barong', 'Batik Truntum Garuda', 'Batik Wahyu Temurun', 'Kain Endek Bali', 'batik buketan', 'batik jepara', 'batik parang', 'batik prada', 'batik sekarjagad']
 
     predicted_class_names = [class_names[idx] for idx in top3_classes_idx]
-    predicted_probabilities = [prediction[0][idx] for idx in top3_classes_idx]
+    predicted_probabilities = [float(prediction[0][idx]) for idx in top3_classes_idx]
 
-    return predicted_class_names + predicted_probabilities
+    # Return as a dictionary
+    return {
+        "predicted_class_names": predicted_class_names,
+        "predicted_probabilities": predicted_probabilities
+    }
 
 def upload_to_bucket(file_storage, blob_name):
     bucket = storage_client.bucket(BUCKET_NAME)
@@ -74,12 +78,12 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'picture' not in request.files:
-        return "No picture uploaded", 400
+        return jsonify({"error": "No picture uploaded"}), 400
 
     picture = request.files['picture']
 
     if picture.filename == '':
-        return "No selected picture", 400
+        return jsonify({"error": "No selected picture"}), 400
 
     if picture:
         # Generate a unique blob name using uuid (you may need to adjust this logic)
@@ -91,8 +95,8 @@ def predict():
         # Get prediction using your processing function
         prediction = predict_image(BUCKET_NAME, blob_name)
 
-        # Return the prediction result
-        return f"Hasil: {prediction}"
+        # Return the prediction result as JSON
+        return jsonify(prediction)
 
 if __name__ == '__main__':
     app.run(debug=True)
