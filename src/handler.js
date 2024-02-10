@@ -122,7 +122,7 @@ const objectPredict = async (request, h) => {
     data.append("picture", imageBuffer, { filename: "image.jpg" });
 
     const response = await axios.post(
-      "http://35.219.11.226:3689/object",
+      "http://35.208.9.11:3689/object",
       data,
       {
         headers: {
